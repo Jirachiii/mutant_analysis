@@ -1,114 +1,118 @@
-# Beginner's Guide to Labeling Software Mutants
+# Guide to Labeling Code Changes
 
-## What are Software Mutants?
+## What You'll Be Doing
 
-Software mutants are slightly modified versions of your original program, created by making small, intentional changes (mutations) to the source code. These are used in **mutation testing** to evaluate how good your test suite is at detecting bugs.
+You'll be looking at **code changes** (shown as diffs) and answering two simple questions about each change:
+1. **Does the changed program behave identically to the original program for all inputs?**
+2. **Does this look like a realistic mistake a developer might make?**
 
-## Types of Mutants You Need to Label
+## The Two Questions You'll Answer
 
-### 1. Equivalent Mutants 🟰
+### Question 1: Does the changed program behave identically to the original for all inputs?
 
-**Definition:** A mutant that behaves identically to the original program for ALL possible inputs.
+**Look for changes that would make the program do something different:** If the change is in code that never executes, or if it's mathematically equivalent, it doesn't affect behavior.
 
-**Key Characteristics:**
-- Produces the same output as the original program
-- Cannot be detected by any test case, no matter how comprehensive
-- Represents changes that don't affect program behavior
+**✅ The programs have identical behavior (Answer 1):**
+```python
+# Original
+if False:
+    print("This never runs")
 
-**How to Identify:**
-- Look for changes that are mathematically or logically equivalent
-- Check if the mutation affects unreachable code
+# Changed version
+if False:
+    print("This STILL never runs")  # Same behavior - dead code
+```
 
-**Common Examples:**
-```java
-// Original
-if (0) return true;
+**❌ Change to program behavior (Answer 0):**
+```python
+# Original  
+if x < 10:
+    return True
 
-// Equivalent mutant (the change takes place in unreachable code)
-if (0) return false;
+# Changed version  
+if x <= 10:  # Now includes x=10, different behavior
+    return True
 ```
 
 ```python
 # Original
-result = x + 0
+import pandas as pd
 
-# Equivalent mutant
-result = x - 0
+# Changed version - Commenting out an import will cause change in behavior if the import is used
+# import pandas as pd   
 ```
 
-**Labeling Decision:** Mark as **EQUIVALENT** if the mutant behavior cannot be distinguished from the original program.
+### Question 2: Does this look like a realistic developer mistake?
 
+**Think: "Could someone accidentally write this while coding?"**
 
-### 2. Natural Mutants ✅
+**✅ Realistic mistake (Answer 1):**
+```python
+# Original
+for i in range(len(items)):
 
-**Definition:** Mutants that represent realistic bugs and can potentially be detected by good test cases.
+# Changed version - Natural off-by-one error
+for i in range(len(items) - 1):
+```
 
-**Key Characteristics:**
-- Behave differently from the original program for some inputs
-- Represent common programming mistakes
-- Can be "killed" (detected) by well-designed test cases
+**❌ Unrealistic change (Answer 0):**
+```python
+# Original
+def calculate_total(prices):
 
-**How to Identify:**
-- The mutant produces different output for at least some input
-- The change represents a plausible programmer error
-
-**Common Examples:**
-```java
-// Original
-if (x < 10) { ... }
-
-// Natural mutant (boundary condition error)
-if (x <= 10) { ... }
+# Changed version - No developer would write this
+def xkcd_random_gibberish_name(prices):
 ```
 
 ```python
 # Original
-for i in range(len(array)):
+result = a + b
 
-# Unnatural mutant (variable name that a developer would not set)
-for isskalajdha in range(len(array) - 1):
+# Changed version - meaningless Python syntax
+result = a @@ b
 ```
 
-**Labeling Decision:** Mark as **NATURAL** if the mutant reflects changes a developer can realistically make.
+**Key insight:** Ask yourself "Would a real person accidentally type this?" Typos and common mistakes = realistic. Random gibberish = unrealistic.
 
 ## Step-by-Step Labeling Process
 
 ### Step 1: Setup
-1. Install the repo and dependencies
+1. Install the repository and dependencies
 ```bash
-    git clone https://github.com/Jirachiii/mutant_analysis.git
-    pip install requests
+git clone https://github.com/Jirachiii/mutant_analysis.git
+pip install requests
 ```
-2. You'll be provided an input file(for example, ```test_sampled_mutants.json```). Save it inside the installed repository
-3. Change the ```filename``` variable at line 134 of ```object_browser.py``` to the name of the input file
+2. Save your input file (e.g., `test_sampled_mutants.json`) inside the repository.
+3. Update the `filename` variable at line 134 of `object_browser.py` to match your input file name.
 4. Run the labeling program
 ```bash
-    cd mutant_analysis
-    python object_browser.py
+cd mutant_analysis
+python object_browser.py
 ```
 
-### Step 2: Analyse the mutants
-1. A diff between the original program and the mutant program is displayed. Examine the diff to see what specific change was made to the original program
-For example:
+### Step 2: Analyze Each Sample
+1. **Examine the diff** - A comparison between original and mutant code is displayed, such as:
 ```
-    def check_even_number(number: int) -> Bool:
-        if number % 2 == 0:
--            return True
-+            return number % 2
-        else:
-            return False
-```
-2. Understand the change: In this example, when number is even, the original code returns True, while the mutant returns 0 (which is ```number % 2``` for even numbers)
-3. Consider the impact of the change - Could this change affect program behavior? Is this change something you would see in a real-life program?
-4. Answer two questions:
-- Equivalent? Does it behave the same for ALL inputs? (1 = yes, 0 = no)
-- Natural? Is this a realistic developer mistake? (1 = yes, 0 = no)
+    def __call__(self, data, groupby, orient, scales):
 
-### Step 3: Use Additional Information when Uncertain
+-        return (
+-            groupby
+-            .apply(data.dropna(subset=["x", "y"]), self._fit_predict)
+-        )
++        return (
++            groupby
++            .apply(data, self._fit_predict)
++        )
+```
+
+2. **Understand the change** - In this example: The change takes place in line ```.apply(data.dropna(subset=["x", "y"]), self._fit_predict)```, which was changed to ```.apply(data, self._fit_predict)```
+
+3. **Answer two questions:**
+   - **Do the programs behave the same?** The change does affect program behavior, as the data can now include NaN values -> Choose 0 for NO 
+   - **Is this a realistic developer mistake?** A developer can forget to remove NaN values before processing their, so this looks natural -> Choose 1 for YES
+
+### Step 3: Use Additional Information When Uncertain
 1. Below each mutant ID, you'll find a commit URL
-2. Open the URL to view the original code context on GitHub
+2. Click the URL to view the original code context on GitHub
 3. Use GitHub's "Search within code" to locate the relevant file
 4. Use "View file" to see the complete file for better context
-
-### Step 4: Return result file
-All labeled data will be saved in the file ```label_{input_filename}.json```. Use this file to turn in your label results.

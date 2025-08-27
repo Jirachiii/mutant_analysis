@@ -3,6 +3,11 @@ import os
 import random
 import requests
 
+# CHANGE FILENAME HERE
+FILENAME = "bt_sampled_mutants.json"
+# SKIP THE FIRST 0 SAMPLES
+SKIP = 0
+
 def get_commit_url(instance_id: str):
     """Get the url of related commit"""
     repo_author = instance_id.split('__', 1)[0]
@@ -73,47 +78,46 @@ def browse_json_objects(filename, sample: int = 236):
         return
     
     print(f"Found {len(objects)} objects in '{filename}'")
-    
-    index = 0
+    index = 0 + SKIP
     total = len(objects)
 
     label_results = []
+    acceptable_inputs = ["2", "0", "1"]
 
     while index < total:
         display_object(objects[index], index, total)
 
         current_object = {
             'mutant_id': objects[index].get('mutant_id'),
-            'natural': 2,
-            'equivalent': 2
+            'natural': None,
+            'equivalent': None
         }
         
         # Wait for user input
         print("Check for equivalent: Does the changed program behaves identically to the original program for ALL possible inputs?")
-        user_input = input("Press 1 for YES, 0 for NO, enter for UNSURE, or 'q' to quit: ").strip().lower()
+        user_input = input("Press 0 for NO, 1 for YES, 2 for UNSURE, or 'q' to quit: ").strip().lower()
         
         if user_input == 'q':
             print("Goodbye!")
             break
-        elif user_input == "1":
-            current_object["equivalent"] = 1
-        elif user_input == "0":
-            current_object['equivalent'] = 0
+        elif user_input in acceptable_inputs:
+            current_object["equivalent"] = user_input
 
         # Wait for user input
         print("\nCheck for natural: Does the change represent a REALISTIC change that a developer might make?")
-        user_input = input("Press 1 for YES, 0 for NO, enter for UNSURE, or 'q' to quit: ").strip().lower()
+        user_input = input("Press 0 for NO, 1 for YES, 2 for UNSURE, or 'q' to quit: ").strip().lower()
         
         if user_input == 'q':
             print("Goodbye!")
-            label_results.append(current_object)
             break
-        elif user_input == "1":
-            current_object["natural"] = 1
-        elif user_input == "0":
-            current_object["natural"] = 0
-        
-        label_results.append(current_object)
+        elif user_input in acceptable_inputs:
+            current_object["natural"] = user_input
+
+        if current_object["equivalent"] or current_object["natural"]:
+            label_results.append(current_object)
+            with open(f"label_{FILENAME[:-5]}.jsonl", 'a') as f:
+                json.dump(current_object, f)
+                f.write('\n')
 
         index += 1
         
@@ -130,19 +134,14 @@ def main():
     print("JSON Object Browser")
     print("-" * 20)
     
-    # CHANGE FILENAME HERE
-    filename = "test_sampled_mutants.json"
-    file_id = filename.split('_')[0]
-    
-    if not filename:
+    if not FILENAME:
         print("No filename provided.")
         return
     
     # Change sample size here
-    label_results = browse_json_objects(filename)
+    label_results = browse_json_objects(FILENAME)
+    print(f"Finished labeling {len(label_results)} samples! 🥳")
 
-    with open(f"label_{file_id}.json", 'w') as f:
-        json.dump(label_results, f, indent=2)
 
 if __name__ == "__main__":
     main()

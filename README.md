@@ -38,7 +38,7 @@ if x <= 10:  # Now includes x=10, different behavior
 # Original
 import pandas as pd
 
-# Changed version - Commenting out an import will cause change in behavior if the import is used
+# Changed version - Commenting out an import causes change in behavior if the import is used
 # import pandas as pd   
 ```
 
@@ -109,7 +109,7 @@ python object_browser.py
 
 3. **Answer two questions:**
    - **Do the programs behave the same?** The change does affect program behavior, as the data can now include NaN values -> Choose 0 for NO 
-   - **Is this a realistic developer mistake?** A developer can forget to remove NaN values before processing their, so this looks natural -> Choose 1 for YES
+   - **Is this a realistic developer mistake?** A developer can forget to remove NaN values before processing data, so this looks natural -> Choose 1 for YES
 
 ### Step 3: Use Additional Information When Uncertain
 1. Below each mutant ID, you'll find a commit URL

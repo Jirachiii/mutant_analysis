@@ -83,7 +83,7 @@ git clone https://github.com/Jirachiii/mutant_analysis.git
 pip install requests
 ```
 2. Save your input file (e.g., `test_sampled_mutants.json`) inside the repository.
-3. Update the `filename` variable at line 134 of `object_browser.py` to match your input file name.
+3. Update the `filename` variable at line 7 of `object_browser.py` to match your input file name.
 4. Run the labeling program
 ```bash
 cd mutant_analysis

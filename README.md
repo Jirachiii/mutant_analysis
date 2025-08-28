@@ -4,7 +4,7 @@
 
 You'll be looking at **code changes** (shown as diffs) and answering two simple questions about each change:
 1. **Does the changed program behave identically to the original program for all inputs?**
-2. **Does this look like a realistic mistake a developer might make?**
+2. **On a scale of 1-5, how realistic is this code change?**
 
 ## The Two Questions You'll Answer
 
@@ -42,11 +42,11 @@ import pandas as pd
 # import pandas as pd   
 ```
 
-### Question 2: Does this look like a realistic developer mistake?
+### Question 2: On a scale of 1-5, does this look like a realistic developer mistake?
 
 **Think: "Could someone accidentally write this while coding?"**
 
-**✅ Realistic mistake (Answer 1):**
+**✅ Realistic mistake (Answer 4 or 5):**
 ```python
 # Original
 for i in range(len(items)):
@@ -55,7 +55,7 @@ for i in range(len(items)):
 for i in range(len(items) - 1):
 ```
 
-**❌ Unrealistic change (Answer 0):**
+**❌ Unrealistic change (Answer 1 or 2):**
 ```python
 # Original
 def calculate_total(prices):
@@ -109,7 +109,7 @@ python object_browser.py
 
 3. **Answer two questions:**
    - **Do the programs behave the same?** The change does affect program behavior, as the data can now include NaN values -> Choose 0 for NO 
-   - **Is this a realistic developer mistake?** A developer can forget to remove NaN values before processing data, so this looks natural -> Choose 1 for YES
+   - **On a scale of 1 to 5, how realistic is this mistake?** A developer can forget to remove NaN values before processing data, so this looks natural -> Choose 4 or 5 for STRONGLY NATURAL
 
 ### Step 3: Use Additional Information When Uncertain
 1. Below each mutant ID, you'll find a commit URL

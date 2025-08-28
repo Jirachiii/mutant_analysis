@@ -82,7 +82,7 @@ def browse_json_objects(filename, sample: int = 236):
     total = len(objects)
 
     label_results = []
-    acceptable_inputs = ["2", "0", "1"]
+    acceptable_inputs = ["0", "1", "2", "3", "4", "5"]
 
     while index < total:
         display_object(objects[index], index, total)
@@ -105,7 +105,7 @@ def browse_json_objects(filename, sample: int = 236):
 
         # Wait for user input
         print("\nCheck for natural: Does the change represent a REALISTIC change that a developer might make?")
-        user_input = input("Press 0 for NO, 1 for YES, 2 for UNSURE, or 'q' to quit: ").strip().lower()
+        user_input = input("Evaluate on a scale of 1(Strongly Unnatural) to 5(Strongly Natural), or press 'q' to quit: ").strip().lower()
         
         if user_input == 'q':
             print("Goodbye!")

@@ -2,11 +2,21 @@ import json
 import os
 import random
 import requests
+from colorama import init, Fore, Style
 
 # CHANGE FILENAME HERE
-FILENAME = "bt_sampled_mutants.json"
+FILENAME = "test_sampled_mutants.json"
 # SKIP THE FIRST 0 SAMPLES
 SKIP = 0
+
+
+def clear_screen():
+    # For Windows
+    if os.name == 'nt':
+        os.system('cls')
+    # For macOS and Linux
+    else:
+        os.system('clear')
 
 def get_commit_url(instance_id: str):
     """Get the url of related commit"""
@@ -53,7 +63,14 @@ def display_object(obj, index, total):
     print(f"Mutant ID: {obj.get('mutant_id')}")
     print(f"Commit URL: {commit_url}")
     print("="*50)
-    print("Code for Evaluation:\n", obj.get('full_function'))
+    print("Code for Evaluation:")
+    for line in obj.get('full_function').splitlines():
+        if line.startswith("-"):
+            print(Fore.RED + line)
+        elif line.startswith("+"):
+            print(Fore.GREEN + line)
+        else:
+            print(Fore.WHITE + line)
     print("="*50)
 
 def browse_json_objects(filename, sample: int = 236):
@@ -122,7 +139,7 @@ def browse_json_objects(filename, sample: int = 236):
         index += 1
         
         # Clear screen for better readability (optional)
-        os.system('cls' if os.name == 'nt' else 'clear')
+        clear_screen()
     
     if index >= total:
         print("\nReached the end of all objects!")
@@ -139,6 +156,8 @@ def main():
         return
     
     # Change sample size here
+    clear_screen()
+    init(autoreset=True)
     label_results = browse_json_objects(FILENAME)
     print(f"Finished labeling {len(label_results)} samples! 🥳")
 

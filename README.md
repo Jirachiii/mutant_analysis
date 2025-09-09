@@ -80,7 +80,7 @@ result = a @@ b
 1. Install the repository and dependencies
 ```bash
 git clone https://github.com/Jirachiii/mutant_analysis.git
-pip install requests
+pip install requests colorama
 ```
 2. Save your input file (e.g., `test_sampled_mutants.json`) inside the repository.
 3. Update the `filename` variable at line 7 of `object_browser.py` to match your input file name.
